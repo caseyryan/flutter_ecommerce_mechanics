@@ -21,7 +21,8 @@ class _CardViewState extends State<CardView> {
 
   double _tiltValueX = 0;
   double _tiltValueY = 0;
-
+  GlobalKey _imageKey = GlobalKey();
+  GlobalKey _cardKey = GlobalKey();
 
   double deg2rad(double degrees) {
     return degrees / 180 * pi;
@@ -52,17 +53,23 @@ class _CardViewState extends State<CardView> {
                       if (widget.onTap != null) {
                         widget.onTap(widget.cardData);
                       }
-                      RenderBox renderBox = context.findRenderObject();
+                      RenderBox cardRenderBox = _cardKey.currentContext.findRenderObject();
+                      RenderBox imageRenderBox = _imageKey.currentContext.findRenderObject();
+//                      print("IMAGE RENDER BOX ${imageRenderBox.size}");
+//                      print("CARD RENDER BOX ${cardRenderBox.size}");
+
                       Navigator.of(context).push(
                         PreviewPopupRoute(
                           slideData: widget.cardData,
-                          size: renderBox.size,
-                          position: renderBox.localToGlobal(Offset.zero),
+                          cardSize: cardRenderBox.size,
+                          imageSize: imageRenderBox.size,
+                          position: cardRenderBox.localToGlobal(Offset.zero),
                         )
                       );
                     },
                     child: Card(
                       child: Padding( // inner padding
+                        key: _cardKey,
                         padding: const EdgeInsets.all(10.0),
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.start,
@@ -75,6 +82,7 @@ class _CardViewState extends State<CardView> {
                                   child: Container( // image
                                     width: widget.cardData.imageWidth,
                                     height: widget.cardData.imageHeight,
+                                    key: _imageKey,
                                     decoration: BoxDecoration(
                                         borderRadius: BorderRadius.circular(7),
                                         image: DecorationImage(

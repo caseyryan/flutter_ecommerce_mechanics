@@ -7,9 +7,9 @@ class CardData {
   static const double CARD_WIDTH = 400;
   static const double CARD_HEIGHT = 540;
 
-  final double sidePadding = 3.0;
-  final double topPadding = 3.0;
-  final double bottomPadding = 25.0;
+  final double sidePadding = 10;
+  final double topPadding = 10;
+  final double bottomPadding = 60.0;
   final double imageWidth = 400.0;
   final double imageHeight = 462.0;
 
