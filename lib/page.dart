@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_challenge_ecommerce/custom_app_bar.dart';
 
 import 'card_view.dart';
 
@@ -23,9 +24,9 @@ class _PageState extends State<Page> {
 
   List<CardView> _getCards() {
     var cards = <CardView>[];
-    for (var i = 0; i < _slideDatas.length; i++) {
-      cards.add(CardView(_slideDatas[i], i.toDouble(), onTap: _onCardTap,));
-    }
+    _slideDatas.forEach((slideData) {
+      cards.add(CardView(slideData, onTap: _onCardTap,));
+    });
     return cards;
   }
 
@@ -72,56 +73,41 @@ class _PageState extends State<Page> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: _pageColor,
-      appBar: PreferredSize(
-        preferredSize: Size.fromHeight(70),
-        child: AppBar(
-          leading: Padding(
-            padding: const EdgeInsets.only(top: 10.0),
-            child: Icon(Icons.arrow_back, color: Colors.white, size: 30,),
-          ),
-          elevation: 0,
-          actions: <Widget>[
-            Padding(
-              padding: const EdgeInsets.only(top: 20.0, bottom: 10.0, left: 10.0, right: 10.0),
-              child: Icon(Icons.add_shopping_cart, size: 25,),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(top: 20.0, bottom: 10.0, left: 10.0, right: 20.0),
-              child: Icon(Icons.filter_none, size: 25,),
-            ),
-          ],
-          backgroundColor: Colors.transparent,
-
-        ),
-      ),
-      body: Container(
-        width: double.infinity,
-        height: double.infinity,
-        child: Column(
-          children: <Widget>[
-            SizedBox(
-              height: 20,
-            ),
-            Stack(
-              overflow: Overflow.visible,
+      body: Stack(
+        children: <Widget>[
+          Container(
+            width: double.infinity,
+            height: double.infinity,
+            child: Column(
               children: <Widget>[
-                AspectRatio(
-                  aspectRatio: 284 / 340,
-                  child: Container(
-                    width: MediaQuery.of(context).size.width,
-                    child: ScrollConfiguration(
-                      behavior: NoGlowScrollBehavior(),
-                      child: PageView(
-                        controller: _pageController,
-                        children: _getCards(),
+                SizedBox(
+                  height: 120,
+                ),
+                Stack(
+                  overflow: Overflow.visible,
+                  children: <Widget>[
+                    AspectRatio(
+                      aspectRatio: 284 / 340,
+                      child: Container(
+                        width: MediaQuery.of(context).size.width,
+                        child: ScrollConfiguration(
+                          behavior: NoGlowScrollBehavior(),
+                          child: PageView(
+                            controller: _pageController,
+                            children: _getCards(),
+                          ),
+                        ),
                       ),
                     ),
-                  ),
+                  ],
                 ),
               ],
-            ),
-          ],
-        )
+            )
+          ),
+          SafeArea(
+            child: CustomAppBar()
+          ),
+        ],
       ),
     );
   }
