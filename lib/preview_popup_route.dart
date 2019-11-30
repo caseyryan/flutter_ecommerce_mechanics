@@ -27,14 +27,14 @@ class PreviewPopupRoute extends PageRoute<void> {
   @override
   Widget buildPage(BuildContext context, Animation<double>
   animation, Animation<double> secondaryAnimation) {
-    return PreviewPage(size: size, position: position, slideData: slideData,);
+    return PreviewPage(size: size, position: position, slideData: slideData, animation: animation);
   }
 
   @override
   bool get maintainState => true;
 
   @override
-  Duration get transitionDuration => Duration(milliseconds: 400);
+  Duration get transitionDuration => Duration(milliseconds: 1000);
 
 }
 
@@ -43,14 +43,40 @@ class PreviewPage extends StatefulWidget {
   final SlideData slideData;
   final Size size;
   final Offset position;
+  final Animation<double> animation;
 
-  PreviewPage({this.slideData, this.size, this.position});
+  PreviewPage({this.slideData, this.size, this.position, this.animation});
 
   @override
   _PreviewPageState createState() => _PreviewPageState();
 }
 
-class _PreviewPageState extends State<PreviewPage> {
+class _PreviewPageState extends State<PreviewPage> with SingleTickerProviderStateMixin {
+
+
+  Animation<double> _imagePosAnimation;
+  Animation<double> _sizeAnimation;
+
+  @override
+  void initState() {
+
+    _imagePosAnimation = Tween<double>(
+      begin: 1.0,
+      end: 0.0
+    ).animate(CurvedAnimation(
+      curve: Curves.easeOutBack,
+      parent: widget.animation,
+    ));
+    _sizeAnimation = Tween<double>(
+        begin: 0.0,
+        end: 1.0
+    ).animate(CurvedAnimation(
+      curve: Curves.easeOutBack,
+      parent: widget.animation,
+    ));
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -58,48 +84,36 @@ class _PreviewPageState extends State<PreviewPage> {
       body: Stack(
         fit: StackFit.expand,
         children: <Widget>[
-          Positioned(
-            top: widget.position.dy,
-            left: widget.position.dx,
-            child: Container(
-              width: widget.size.width,
-              height: widget.size.height,
-              color: Colors.yellowAccent,
-              child: Container(
-                width: 320,
-                height: 435,
-                child: Padding( // паддинг внутри карточки
-                  padding: const EdgeInsets.all(12.0),
-                  child: Column(
+          AnimatedBuilder(
+            animation: widget.animation,
+            builder: (c, w) {
+              return LayoutBuilder(
+                builder: (BuildContext context, BoxConstraints constraints) {
+                  var size = constraints.biggest;
+                  var paddingWidth = widget.size.width + ((size.width - widget.size.width) * _sizeAnimation.value);
+                  var paddingHeight = widget.size.height + ((size.height - widget.size.height) * _sizeAnimation.value);
+                  return Stack(
                     children: <Widget>[
-                      AspectRatio(
-                        aspectRatio: 400 / 485,
-                        child: Stack(
-                          overflow: Overflow.visible,
-                          children: <Widget>[
-                            Container( // image
-                              width: double.infinity,
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(7),
-                                  image: DecorationImage(
-                                      fit: BoxFit.contain,
-                                      image: AssetImage(widget.slideData.imagePath)
-                                  )
-                              ),
-                            )
-                          ],
+                      Positioned(
+                        top: widget.position.dy * _imagePosAnimation.value,
+                        left: widget.position.dx * _imagePosAnimation.value,
+                        child: Container(
+                          width: paddingWidth,
+                          height: paddingHeight,
+                          color: Colors.yellowAccent,
                         ),
-                      )
+                      ),
                     ],
-                  ),
-                ),
-              ),
-            ),
+                  );
+                },
+              );
+            },
+
           ),
           SafeArea(child: Align(
               alignment: Alignment.topLeft,
               child: CustomAppBar()
-          )
+            )
           ),
         ],
       ),
@@ -109,3 +123,14 @@ class _PreviewPageState extends State<PreviewPage> {
 
 
 
+//Container( // image
+//width: 320,
+//height: 435,
+//decoration: BoxDecoration(
+//borderRadius: BorderRadius.circular(7),
+//image: DecorationImage(
+//fit: BoxFit.contain,
+//image: AssetImage(widget.slideData.imagePath)
+//)
+//),
+//)

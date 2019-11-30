@@ -1,10 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_challenge_ecommerce/page.dart';
+import 'package:screen/screen.dart';
 
 void main() => runApp(MyApp());
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   // This widget is the root of your application.
+  @override
+  _MyAppState createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+
+  @override
+  void initState() {
+    setState(() {
+      Screen.keepOn(true);
+    });
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
