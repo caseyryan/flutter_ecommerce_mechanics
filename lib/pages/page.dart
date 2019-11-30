@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_challenge_ecommerce/data/card_data.dart';
+import 'package:flutter_challenge_ecommerce/data/data.dart';
 import 'package:flutter_challenge_ecommerce/ui/custom_app_bar.dart';
 
-import '../card_view.dart';
+import '../ui/card_view.dart';
 import '../utility_classes.dart';
 
 class Page extends StatefulWidget {
   @override
   _PageState createState() => _PageState();
 }
-
 
 class _PageState extends State<Page> {
 
@@ -17,15 +18,10 @@ class _PageState extends State<Page> {
   Color _pageColor;
   int _initialPage = 0;
 
-  List<SlideData> _slideDatas = [
-    SlideData(title: 'Michael Kors Hmilton', price: 2188.00, imagePath: 'assets/img/purse1.jpg', pageColor: Color.fromRGBO(255, 187, 137, 1.0)),
-    SlideData(title: 'Saint Laurent', price: 1455.00, imagePath: 'assets/img/purse2.jpg', pageColor: Color.fromRGBO(255, 179, 186, 1.0)),
-    SlideData(title: 'ZATCHELS', price: 2398.00, imagePath: 'assets/img/purse3.jpg', pageColor: Color.fromRGBO(163, 164, 221, 1.0)),
-  ];
 
   List<CardView> _getCards() {
     var cards = <CardView>[];
-    _slideDatas.forEach((slideData) {
+    Data().slideDatas.forEach((slideData) {
       cards.add(CardView(slideData, onTap: _onCardTap,));
     });
     return cards;
@@ -33,7 +29,7 @@ class _PageState extends State<Page> {
 
   @override
   void initState() {
-    _pageColor = _slideDatas[_initialPage].pageColor;
+    _pageColor = Data().slideDatas[_initialPage].pageColor;
     _pageController = PageController(
       viewportFraction: .85,
       initialPage: _initialPage
@@ -50,8 +46,8 @@ class _PageState extends State<Page> {
       }
       var lerpValue = (nextValue - _pageController.page).abs();
       print('LERP $lerpValue');
-      var currentColor = _slideDatas[prevValue.toInt()].pageColor;
-      var nextColor = _slideDatas[nextValue.toInt()].pageColor;
+      var currentColor = Data().slideDatas[prevValue.toInt()].pageColor;
+      var nextColor = Data().slideDatas[nextValue.toInt()].pageColor;
       setState(() {
         _pageColor = Color.lerp(nextColor, currentColor, lerpValue);
       });
@@ -61,13 +57,18 @@ class _PageState extends State<Page> {
     });
     super.initState();
   }
-  void _onCardTap(SlideData slideData) {
+  void _onCardTap(CardData slideData) {
     print(slideData.imagePath);
   }
   @override
   void dispose() {
     _pageController?.dispose();
     super.dispose();
+  }
+
+  double _calculatePageAspectRatio() {
+    return (1 / _pageController.viewportFraction) *
+        (CardData.CARD_WIDTH / CardData.CARD_HEIGHT);
   }
 
   @override
@@ -88,15 +89,12 @@ class _PageState extends State<Page> {
                   overflow: Overflow.visible,
                   children: <Widget>[
                     AspectRatio(
-                      aspectRatio: 284 / 340,
-                      child: Container(
-                        width: MediaQuery.of(context).size.width,
-                        child: ScrollConfiguration(
-                          behavior: NoGlowScrollBehavior(),
-                          child: PageView(
-                            controller: _pageController,
-                            children: _getCards(),
-                          ),
+                      aspectRatio: _calculatePageAspectRatio(),
+                      child: ScrollConfiguration(
+                        behavior: NoGlowScrollBehavior(),
+                        child: PageView(
+                          controller: _pageController,
+                          children: _getCards(),
                         ),
                       ),
                     ),
