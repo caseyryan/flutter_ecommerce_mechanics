@@ -1,9 +1,9 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
-import 'package:flutter_challenge_ecommerce/page.dart';
 import 'package:flutter_challenge_ecommerce/preview_popup_route.dart';
+import 'package:flutter_challenge_ecommerce/utility_classes.dart';
+
 
 class CardView extends StatefulWidget {
 

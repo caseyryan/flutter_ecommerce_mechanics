@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_challenge_ecommerce/custom_app_bar.dart';
+import 'package:flutter_challenge_ecommerce/ui/custom_app_bar.dart';
 
-import 'card_view.dart';
+import '../card_view.dart';
+import '../utility_classes.dart';
 
 class Page extends StatefulWidget {
   @override
@@ -113,20 +114,3 @@ class _PageState extends State<Page> {
   }
 }
 
-class SlideData {
-  final Color pageColor;
-  final String imagePath;
-  final double price;
-  final String title;
-
-  SlideData({this.imagePath, this.title, this.pageColor, this.price});
-
-}
-
-class NoGlowScrollBehavior extends ScrollBehavior {
-  @override
-  Widget buildViewportChrome(
-      BuildContext context, Widget child, AxisDirection axisDirection) {
-    return child;
-  }
-}

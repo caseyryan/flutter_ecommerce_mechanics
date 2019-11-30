@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_challenge_ecommerce/page.dart';
+import 'package:flutter_challenge_ecommerce/pages/page.dart';
 import 'package:screen/screen.dart';
 
 void main() => runApp(MyApp());
