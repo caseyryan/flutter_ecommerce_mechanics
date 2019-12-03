@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_challenge_ecommerce/data/card_data.dart';
+import 'package:flutter_challenge_ecommerce/data/data.dart';
 import 'package:flutter_challenge_ecommerce/preview_popup_route.dart';
 import 'package:flutter_challenge_ecommerce/utility_classes.dart';
 
@@ -27,6 +28,63 @@ class _CardViewState extends State<CardView> {
   double deg2rad(double degrees) {
     return degrees / 180 * pi;
   }
+
+  Widget _createCartIcon() {
+    return Hero(
+      tag: widget.cardData.title,
+      child: Container(
+        width: 45,
+        height: 45,
+        child: Icon(
+          Icons.add_shopping_cart,
+          color: Colors.white,
+        ),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.all(Radius.circular(25)),
+          color: Data().pink,
+        ),
+      ),
+    );
+  }
+  Widget _getDescription() {
+    return Expanded(
+      child: Hero(
+
+        tag: 'description${widget.cardData.title}',
+        child: Material(
+          color: Colors.transparent,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Text(
+                '¥ ${widget.cardData.price.toStringAsFixed(2)}',
+                textAlign: TextAlign.left,
+                style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w900,
+                    color: Colors.black
+                ),
+              ),
+              SizedBox(
+                height: 7,
+              ),
+              Text(
+                widget.cardData.title,
+                textAlign: TextAlign.left,
+                style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.black
+                ),
+              )
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -77,7 +135,7 @@ class _CardViewState extends State<CardView> {
                           children: <Widget>[
                             Stack(
                               children: <Widget>[
-                                AspectRatio(
+                                AspectRatio( // image
                                   aspectRatio: widget.cardData.getAspectRatio(),
                                   child: Container( // image
                                     width: widget.cardData.imageWidth,
@@ -93,6 +151,15 @@ class _CardViewState extends State<CardView> {
                                   ),
                                 )
                               ],
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(top: 10),
+                              child: Row(
+                                children: <Widget>[
+                                  _getDescription(),
+                                  _createCartIcon(),
+                                ],
+                              ),
                             )
                           ],
                         ),

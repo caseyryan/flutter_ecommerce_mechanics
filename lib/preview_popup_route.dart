@@ -45,6 +45,6 @@ class PreviewPopupRoute extends PageRoute<void> {
   bool get maintainState => true;
 
   @override
-  Duration get transitionDuration => Duration(milliseconds: 500);
+  Duration get transitionDuration => Duration(milliseconds: 800);
 
 }

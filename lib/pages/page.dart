@@ -73,40 +73,45 @@ class _PageState extends State<Page> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: _pageColor,
-      body: Stack(
-        children: <Widget>[
-          Container(
-            width: double.infinity,
-            height: double.infinity,
-            child: Column(
-              children: <Widget>[
-                SizedBox(
-                  height: 120,
-                ),
-                Stack(
-                  overflow: Overflow.visible,
-                  children: <Widget>[
-                    AspectRatio(
-                      aspectRatio: _calculatePageAspectRatio(),
-                      child: ScrollConfiguration(
-                        behavior: NoGlowScrollBehavior(),
-                        child: PageView(
-                          controller: _pageController,
-                          children: _getCards(),
+    return WillPopScope(
+      onWillPop: () async {
+        return false;
+      },
+      child: Scaffold(
+        backgroundColor: _pageColor,
+        body: Stack(
+          children: <Widget>[
+            Container(
+              width: double.infinity,
+              height: double.infinity,
+              child: Column(
+                children: <Widget>[
+                  SizedBox(
+                    height: 120,
+                  ),
+                  Stack(
+                    overflow: Overflow.visible,
+                    children: <Widget>[
+                      AspectRatio(
+                        aspectRatio: _calculatePageAspectRatio(),
+                        child: ScrollConfiguration(
+                          behavior: NoGlowScrollBehavior(),
+                          child: PageView(
+                            controller: _pageController,
+                            children: _getCards(),
+                          ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-              ],
-            )
-          ),
-          SafeArea(
-            child: CustomAppBar()
-          ),
-        ],
+                    ],
+                  ),
+                ],
+              )
+            ),
+            SafeArea(
+              child: CustomAppBar()
+            ),
+          ],
+        ),
       ),
     );
   }
