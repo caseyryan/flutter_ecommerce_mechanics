@@ -5,6 +5,7 @@ import 'package:flutter_challenge_ecommerce/ui/custom_app_bar.dart';
 
 import '../ui/card_view.dart';
 import '../utility_classes.dart';
+import '../utils.dart';
 
 class Page extends StatefulWidget {
   @override
@@ -19,10 +20,12 @@ class _PageState extends State<Page> {
   int _initialPage = 0;
 
 
-  List<CardView> _getCards() {
-    var cards = <CardView>[];
+  List<Widget> _getCards() {
+    var cards = <Widget>[];
+    var page = _pageController.hasClients ? _pageController.page : 0.0;
     Data().slideDatas.forEach((slideData) {
-      cards.add(CardView(slideData, onTap: _onCardTap,));
+      cards.add(CardView(slideData, onTap: _onCardTap, pageMoveValue: page,)
+      );
     });
     return cards;
   }
@@ -45,7 +48,7 @@ class _PageState extends State<Page> {
         prevValue = nextValue + 1;
       }
       var lerpValue = (nextValue - _pageController.page).abs();
-      print('LERP $lerpValue');
+//      print('LERP $lerpValue');
       var currentColor = Data().slideDatas[prevValue.toInt()].pageColor;
       var nextColor = Data().slideDatas[nextValue.toInt()].pageColor;
       setState(() {
@@ -58,7 +61,7 @@ class _PageState extends State<Page> {
     super.initState();
   }
   void _onCardTap(CardData slideData) {
-    print(slideData.imagePath);
+//    print(slideData.imagePath);
   }
   @override
   void dispose() {

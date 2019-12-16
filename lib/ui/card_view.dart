@@ -6,13 +6,18 @@ import 'package:flutter_challenge_ecommerce/data/data.dart';
 import 'package:flutter_challenge_ecommerce/preview_popup_route.dart';
 import 'package:flutter_challenge_ecommerce/utility_classes.dart';
 
+import '../utils.dart';
+
 
 class CardView extends StatefulWidget {
 
   final CardData cardData;
   final ValueChanged<CardData> onTap;
+  // used to incline card while moving
+  final double pageMoveValue;
 
-  CardView(this.cardData, {this.onTap});
+
+  CardView(this.cardData, {this.onTap, this.pageMoveValue = 1.0});
 
   @override
   _CardViewState createState() => _CardViewState();
@@ -20,14 +25,13 @@ class CardView extends StatefulWidget {
 
 class _CardViewState extends State<CardView> {
 
+  static const double MAX_INCLINE_DEG = 20.0;
+
   double _tiltValueX = 0;
   double _tiltValueY = 0;
   GlobalKey _imageKey = GlobalKey();
   GlobalKey _cardKey = GlobalKey();
 
-  double deg2rad(double degrees) {
-    return degrees / 180 * pi;
-  }
 
   Widget _createCartIcon() {
     return Hero(
@@ -46,6 +50,20 @@ class _CardViewState extends State<CardView> {
       ),
     );
   }
+
+  @override
+  void didUpdateWidget(Widget oldWidget) {
+    setState(() {
+      // we don't need to know the page's ordinal
+      // number but need to know the current slide value
+      var pageMove = (widget.pageMoveValue % 1.0);
+      var incline = sin(deg2rad(pageMove * 180));
+      _tiltValueY = deg2rad(MAX_INCLINE_DEG * incline);
+    });
+    super.didUpdateWidget(oldWidget);
+  }
+
+
   Widget _getDescription() {
     return Expanded(
       child: Hero(
@@ -84,8 +102,6 @@ class _CardViewState extends State<CardView> {
       ),
     );
   }
-
-
   @override
   Widget build(BuildContext context) {
 
@@ -94,27 +110,50 @@ class _CardViewState extends State<CardView> {
       child: LayoutBuilder(
         builder: (context, constraints) {
           Size size = constraints.biggest;
+          Offset center = Offset(size.width * .5, size.height * .5);
           return Stack(
             fit: StackFit.expand,
             children: <Widget>[
               Transform(
-                origin: Offset(size.width * .5, size.height * .5),
-                transform: Matrix4.identity()
-                  ..rotateX(deg2rad(-15 * _tiltValueY))
-                  ..rotateY(deg2rad(15 * _tiltValueX))
-                  ..setEntry(3, 2, 0.001),
+                origin: center,
+                transform: (Matrix4.identity()
+                  ..setEntry(3, 2, 0.001))
+                    * Matrix4.rotationX(_tiltValueX)
+                    * Matrix4.rotationY(_tiltValueY),
 
                 child: Padding(
                   padding: EdgeInsets.all(5.0),
                   child: GestureDetector(
+
+                    onLongPressMoveUpdate: (LongPressMoveUpdateDetails details) {
+                      setState(() {
+                        var a2 = atan2(
+                          center.dy - details.localPosition.dy,
+                          center.dx - details.localPosition.dx
+                        );
+                        var dist = (center - Offset(
+                            details.localPosition.dx,
+                            details.localPosition.dy)
+                        )
+                        .distance
+                        .clamp(0.0, size.width) / size.width * MAX_INCLINE_DEG;
+
+                        print(dist);
+                        _tiltValueY = deg2rad(cos(a2) * dist);
+                        _tiltValueX = -deg2rad(sin(a2) * dist);
+                      });
+                    },
+                    onLongPressEnd: (LongPressEndDetails details) {
+                      setState(() {
+                        _tiltValueX = _tiltValueY = 0.0;
+                      });
+                    },
                     onTap: () {
                       if (widget.onTap != null) {
                         widget.onTap(widget.cardData);
                       }
                       RenderBox cardRenderBox = _cardKey.currentContext.findRenderObject();
                       RenderBox imageRenderBox = _imageKey.currentContext.findRenderObject();
-//                      print("IMAGE RENDER BOX ${imageRenderBox.size}");
-//                      print("CARD RENDER BOX ${cardRenderBox.size}");
 
                       Navigator.of(context).push(
                         PreviewPopupRoute(

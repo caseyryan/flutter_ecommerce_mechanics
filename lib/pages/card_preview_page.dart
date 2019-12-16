@@ -55,7 +55,7 @@ class _CardPreviewPageState extends State<CardPreviewPage> with SingleTickerProv
       curve: Interval(0.3, 0.7, curve: curve),
       parent: widget.animation,
     ));
-    _imageLiftAnimation = Tween<double>(begin: 0.0, end: -30.0
+    _imageLiftAnimation = Tween<double>(begin: 0.0, end: -50.0
     ).animate(CurvedAnimation(
       curve: Interval(0.0, 0.45, curve: Curves.easeInBack),
       parent: widget.animation,
@@ -85,6 +85,10 @@ class _CardPreviewPageState extends State<CardPreviewPage> with SingleTickerProv
   }
   Widget _createCartIcon() {
     return Hero(
+      flightShuttleBuilder: (BuildContext context, Animation animation,
+          HeroFlightDirection direction, BuildContext context1, BuildContext context2) {
+        return Container();
+      },
       tag: widget.cardData.title,
       child: Container(
         width: 45,
