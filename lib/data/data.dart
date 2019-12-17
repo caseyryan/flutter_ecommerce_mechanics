@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-
-import '../utility_classes.dart';
 import 'card_data.dart';
 
 class Data {

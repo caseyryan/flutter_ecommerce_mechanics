@@ -5,7 +5,7 @@ class CardData {
   /// the outer bounds of the card.
   /// also used in AspectRatio calculation
   static const double CARD_WIDTH = 400;
-  static const double CARD_HEIGHT = 540;
+  static const double CARD_HEIGHT = 560;
 
   final double sidePadding = 10;
   final double topPadding = 10;

@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_challenge_ecommerce/data/card_data.dart';
 import 'package:flutter_challenge_ecommerce/data/data.dart';
 import 'package:flutter_challenge_ecommerce/ui/custom_app_bar.dart';
+import 'package:flutter_challenge_ecommerce/utils/utility_classes.dart';
 
 import '../ui/card_view.dart';
-import '../utility_classes.dart';
-import '../utils.dart';
+import '../utils/utils.dart';
 
 class Page extends StatefulWidget {
   @override
@@ -19,16 +19,6 @@ class _PageState extends State<Page> {
   Color _pageColor;
   int _initialPage = 0;
 
-
-  List<Widget> _getCards() {
-    var cards = <Widget>[];
-    var page = _pageController.hasClients ? _pageController.page : 0.0;
-    Data().slideDatas.forEach((slideData) {
-      cards.add(CardView(slideData, onTap: _onCardTap, pageMoveValue: page,)
-      );
-    });
-    return cards;
-  }
 
   @override
   void initState() {
@@ -48,21 +38,31 @@ class _PageState extends State<Page> {
         prevValue = nextValue + 1;
       }
       var lerpValue = (nextValue - _pageController.page).abs();
-//      print('LERP $lerpValue');
       var currentColor = Data().slideDatas[prevValue.toInt()].pageColor;
       var nextColor = Data().slideDatas[nextValue.toInt()].pageColor;
       setState(() {
         _pageColor = Color.lerp(nextColor, currentColor, lerpValue);
       });
-
-
+      _movePages(_pageController.page);
       _prevPageValue = _pageController.page;
     });
+    _movePages(_initialPage.toDouble());
     super.initState();
   }
-  void _onCardTap(CardData slideData) {
-//    print(slideData.imagePath);
+
+  List<Widget> _getCards() {
+    var cards = <Widget>[];
+    var page = _pageController.hasClients ? _pageController.page : 0.0;
+    Data().slideDatas.forEach((slideData) {
+      cards.add(CardView(slideData, pageMoveValue: page)
+      );
+    });
+    return cards;
   }
+  void _movePages(double pageValue) {
+
+  }
+
   @override
   void dispose() {
     _pageController?.dispose();
@@ -74,6 +74,29 @@ class _PageState extends State<Page> {
         (CardData.CARD_WIDTH / CardData.CARD_HEIGHT);
   }
 
+  List<Widget> _getThumbs() {
+
+    var thumbWidth = 45.0;
+    var thumbPadding = 10.0;
+    var thumbs = <Widget>[];
+    for (var i = 0; i < 10; i++) {
+      var left = i * (thumbWidth + (thumbPadding * 2));
+      thumbs.add(Positioned(
+
+        left: left,
+        child: Padding(
+          padding: EdgeInsets.all(thumbPadding),
+          child: Container(
+            width: thumbWidth,
+            height: 70,
+            color: Colors.white,
+          ),
+        ),
+      ));
+    }
+    return thumbs;
+  }
+
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
@@ -83,13 +106,14 @@ class _PageState extends State<Page> {
       child: Scaffold(
         backgroundColor: _pageColor,
         body: Stack(
+          overflow: Overflow.visible,
           children: <Widget>[
             Container(
               width: double.infinity,
               height: double.infinity,
               child: Column(
                 children: <Widget>[
-                  SizedBox(
+                  SizedBox( // a gap between top and page views
                     height: 120,
                   ),
                   Stack(
@@ -107,6 +131,17 @@ class _PageState extends State<Page> {
                       ),
                     ],
                   ),
+                  // нижний ряд эскизов
+
+                  Expanded(
+                    child: Container(
+                      width: double.infinity,
+                      color: Colors.red,
+                      child: Stack(
+                        children: _getThumbs(),
+                      ),
+                    ),
+                  )
                 ],
               )
             ),

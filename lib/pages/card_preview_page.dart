@@ -8,7 +8,6 @@ import 'package:flutter_challenge_ecommerce/pages/page.dart';
 import 'package:flutter_challenge_ecommerce/ui/card_view.dart';
 import 'package:flutter_challenge_ecommerce/ui/custom_app_bar.dart';
 
-import '../utility_classes.dart';
 
 class CardPreviewPage extends StatefulWidget {
 
