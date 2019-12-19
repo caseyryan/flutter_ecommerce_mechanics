@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_challenge_ecommerce/data/card_data.dart';
 import 'package:flutter_challenge_ecommerce/data/data.dart';
@@ -18,6 +19,9 @@ class _PageState extends State<Page> {
   double _prevPageValue = 0.0;
   Color _pageColor;
   int _initialPage = 0;
+  double _curPageValue = 0.0;
+  double _nextPage = 0.0;
+  double _prevPage = 0.0;
 
 
   @override
@@ -28,25 +32,24 @@ class _PageState extends State<Page> {
       initialPage: _initialPage
     )
     ..addListener(() {
-      var nextValue = 0.0;
-      var prevValue = 0.0;
       if (_pageController.page > _prevPageValue) {
-        nextValue = _pageController.page.ceilToDouble();
-        prevValue = nextValue -1;
+        _nextPage = _pageController.page.ceilToDouble();
+        _prevPage = _nextPage -1;
       } else {
-        nextValue = _pageController.page.floorToDouble();
-        prevValue = nextValue + 1;
+        _nextPage = _pageController.page.floorToDouble();
+        _prevPage = _nextPage + 1;
       }
-      var lerpValue = (nextValue - _pageController.page).abs();
-      var currentColor = Data().slideDatas[prevValue.toInt()].pageColor;
-      var nextColor = Data().slideDatas[nextValue.toInt()].pageColor;
+      var lerpValue = (_nextPage - _pageController.page).abs();
+      var currentColor = Data().slideDatas[_prevPage.toInt()].pageColor;
+      var nextColor = Data().slideDatas[_nextPage.toInt()].pageColor;
       setState(() {
         _pageColor = Color.lerp(nextColor, currentColor, lerpValue);
       });
-      _movePages(_pageController.page);
+      _onPageMove(_pageController.page);
       _prevPageValue = _pageController.page;
     });
-    _movePages(_initialPage.toDouble());
+
+    _onPageMove(_initialPage.toDouble());
     super.initState();
   }
 
@@ -59,8 +62,10 @@ class _PageState extends State<Page> {
     });
     return cards;
   }
-  void _movePages(double pageValue) {
-
+  void _onPageMove(double pageValue) {
+    setState(() {
+      _curPageValue = pageValue;
+    });
   }
 
   @override
@@ -74,22 +79,67 @@ class _PageState extends State<Page> {
         (CardData.CARD_WIDTH / CardData.CARD_HEIGHT);
   }
 
-  List<Widget> _getThumbs() {
+  List<Widget> _getThumbs(double parentWidth) {
 
-    var thumbWidth = 45.0;
-    var thumbPadding = 10.0;
+    var numThumbs = Data().slideDatas.length;
+
+    var thumbWidth = 50.0;
+    const thumbPadding = 10.0;
+    var goDistance = (thumbWidth + (thumbPadding * 2));
+    var halfParent = parentWidth / 2;
+    var maxDistBetween = (thumbWidth / (numThumbs - 1)).clamp(0.0, thumbPadding);
+
     var thumbs = <Widget>[];
-    for (var i = 0; i < 10; i++) {
-      var left = i * (thumbWidth + (thumbPadding * 2));
-      thumbs.add(Positioned(
+    for (var i = 0; i < numThumbs; i++) {
+      var left = (i * goDistance + halfParent - goDistance / 2) - (goDistance * _curPageValue);
+      var spring = sin(deg2rad((_curPageValue % 1.0) * 180));
+      var imageOpacity = .5;
+      var shadowOpacity = .0;
+      if (_nextPage == i) {
+        imageOpacity = 1.0;
+        shadowOpacity = 1.0;
+      }
 
-        left: left,
+      var delta = (i - _curPageValue);
+//      print('PREV: ${_prevPage}____${_curPageValue}___NEXT ${_nextPage}');
+
+      thumbs.add(Positioned(
+        left: left + (i * maxDistBetween * spring),
         child: Padding(
-          padding: EdgeInsets.all(thumbPadding),
-          child: Container(
-            width: thumbWidth,
-            height: 70,
-            color: Colors.white,
+          padding: const EdgeInsets.symmetric(horizontal: thumbPadding),
+          child: Stack(
+            children: <Widget>[
+              AnimatedOpacity(
+                opacity: shadowOpacity,
+                duration: const Duration(milliseconds: 300),
+                child: Container(
+                  width: thumbWidth,
+                  height: 85,
+                  child: CustomPaint(
+                    size: Size(20, 85),
+                    painter: ShadowPainter(.3),
+                  ),
+                ),
+              ),
+              AnimatedOpacity(
+                opacity: imageOpacity,
+                duration: const Duration(milliseconds: 300),
+                child: Container(
+                  width: thumbWidth,
+                  height: 70,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    image: DecorationImage(
+                      image: AssetImage(
+                        Data().slideDatas[i].imagePath
+                      ),
+                      fit: BoxFit.cover
+                    ),
+                    borderRadius: BorderRadius.all(Radius.circular(2)),
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
       ));
@@ -131,17 +181,19 @@ class _PageState extends State<Page> {
                       ),
                     ],
                   ),
-                  // нижний ряд эскизов
-
                   Expanded(
-                    child: Container(
-                      width: double.infinity,
-                      color: Colors.red,
-                      child: Stack(
-                        children: _getThumbs(),
-                      ),
+                    child: LayoutBuilder( // нижний ряд эскизов
+                      builder: (BuildContext context, BoxConstraints constraints) {
+                        return Container(
+                            width: double.infinity,
+//                            color: Colors.red,
+                            child: Stack(
+                              children: _getThumbs(constraints.biggest.width),
+                            ),
+                          );
+                      },
                     ),
-                  )
+                  ),
                 ],
               )
             ),

@@ -164,7 +164,7 @@ class _CardPreviewPageState extends State<CardPreviewPage> with SingleTickerProv
                   var imageAnimWidth = widget.imageSize.width + (pageSize.width - widget.imageSize.width) * _imageSizeAnimation.value;
                   var imageAnimHeight = widget.imageSize.height + (maxImageHeight - widget.imageSize.height) * _imageSizeAnimation.value;
 
-                  var paddingPercent = _imagePosAnimation.value.clamp(0, 1);
+                  var sizeRatio = _imagePosAnimation.value.clamp(0, 1);
 
                   var imageTop = (widget.position.dy * _imagePosAnimation.value) + _imageLiftAnimation.value;
                   var imageLeft = widget.position.dx * _imagePosAnimation.value;
@@ -191,9 +191,9 @@ class _CardPreviewPageState extends State<CardPreviewPage> with SingleTickerProv
                             left: imageLeft,
                             child: Padding(
                               padding: EdgeInsets.only(
-                                top: widget.cardData.topPadding * paddingPercent,
-                                left: widget.cardData.sidePadding * paddingPercent,
-                                right: widget.cardData.sidePadding * paddingPercent,
+                                top: widget.cardData.topPadding * sizeRatio,
+                                left: widget.cardData.sidePadding * sizeRatio,
+                                right: widget.cardData.sidePadding * sizeRatio,
                               ),
                               child: Stack(
                                 children: <Widget>[
@@ -202,7 +202,7 @@ class _CardPreviewPageState extends State<CardPreviewPage> with SingleTickerProv
                                     height: imageAnimHeight,
 //                                    color: Colors.orange.withOpacity(.7),
                                     decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(7 * paddingPercent),
+                                        borderRadius: BorderRadius.circular(7 * sizeRatio),
                                         image: DecorationImage(
                                             fit: BoxFit.cover,
                                             image: AssetImage(widget.cardData.imagePath)
@@ -230,7 +230,95 @@ class _CardPreviewPageState extends State<CardPreviewPage> with SingleTickerProv
                           ),
                         ),
                       ),
+                      Stack(
+                        fit: StackFit.expand,
+                        children: <Widget>[
+                          Stack(
+                            children: <Widget>[
+                              Positioned(
+                                bottom: -80 *  sizeRatio,
+                                left: (pageSize.width - 90) / 2,
+                                child: Opacity(
+                                  opacity: 1 - sizeRatio,
+                                  child: Container(
+                                    width: 90,
+                                    height: 120,
+                                    child: Align(
+                                      child: Image.asset('assets/img/bottom_label.png'),
+                                      alignment: Alignment.topCenter,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          Positioned(
+                            child: Material(
+                              elevation: 20,
+                              child: Container(
+                                width: pageSize.width,
+                                height: 52,
+                                color: Colors.white,
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.max,
+                                  children: <Widget>[
+                                    Flexible(
+                                      flex: 15,
+                                      child: Container(
+                                        child: Center(
+                                          child: Icon(Icons.headset_mic, color: Colors.black26, size: 24,)
+                                        ),
+                                        height: 52,
+                                      ),
+                                    ),
+                                    Flexible(
+                                      flex: 15,
+                                      child: Container(
+                                        child: Center(
+                                            child: Icon(Icons.favorite_border, color: Colors.black26, size: 24,)
+                                        ),
+                                        height: 52,
+                                      ),
+                                    ),
+                                    Flexible(
+                                      flex: 40,
+                                      child: Container(
+                                        child: Center(
+                                          child: Text(
+                                            '加入胞物年',
+                                            style: TextStyle(
+                                              fontSize: 18
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    Flexible(
+                                      flex: 30,
+                                      child: Container(
+                                        height: 52,
+                                        child: Center(
+                                          child: Text(
+                                            '立即駒戻',
+                                            style: TextStyle(
+                                                fontSize: 18,
+                                              color: Colors.white
+                                            ),
+                                          ),
+                                        ),
+                                        color: Data().pink
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                            bottom: -52 *  sizeRatio,
+                          ),
 
+
+                        ],
+                      )
 
                     ],
                   );
