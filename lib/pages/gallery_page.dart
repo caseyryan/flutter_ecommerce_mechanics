@@ -8,12 +8,12 @@ import 'package:flutter_challenge_ecommerce/utils/utility_classes.dart';
 import '../ui/card_view.dart';
 import '../utils/utils.dart';
 
-class Page extends StatefulWidget {
+class GalleryPage extends StatefulWidget {
   @override
-  _PageState createState() => _PageState();
+  _GalleryPageState createState() => _GalleryPageState();
 }
 
-class _PageState extends State<Page> {
+class _GalleryPageState extends State<GalleryPage> {
 
   PageController _pageController;
   double _prevPageValue = 0.0;
@@ -51,6 +51,10 @@ class _PageState extends State<Page> {
 
     _onPageMove(_initialPage.toDouble());
     super.initState();
+  }
+
+  bool _isMovingLeft() {
+    return _nextPage < _prevPage;
   }
 
   List<Widget> _getCards() {
@@ -91,17 +95,15 @@ class _PageState extends State<Page> {
 
     var thumbs = <Widget>[];
     for (var i = 0; i < numThumbs; i++) {
-      var left = (i * goDistance + halfParent - goDistance / 2) - (goDistance * _curPageValue);
       var spring = sin(deg2rad((_curPageValue % 1.0) * 180));
+      var left = (i * goDistance + halfParent - goDistance / 2) - (goDistance * _curPageValue);
+
       var imageOpacity = .5;
       var shadowOpacity = .0;
       if (_nextPage == i) {
         imageOpacity = 1.0;
         shadowOpacity = 1.0;
       }
-
-      var delta = (i - _curPageValue);
-//      print('PREV: ${_prevPage}____${_curPageValue}___NEXT ${_nextPage}');
 
       thumbs.add(Positioned(
         left: left + (i * maxDistBetween * spring),

@@ -5,7 +5,7 @@ class CardData {
   /// the outer bounds of the card.
   /// also used in AspectRatio calculation
   static const double CARD_WIDTH = 400;
-  static const double CARD_HEIGHT = 560;
+  static const double CARD_HEIGHT = 565;
 
   final double sidePadding = 10;
   final double topPadding = 10;
@@ -17,11 +17,12 @@ class CardData {
   final String imagePath;
   final double price;
   final String title;
+  final String discountText;
 
   double getAspectRatio() {
     return imageWidth / imageHeight;
   }
 
-  CardData({this.imagePath, this.title, this.pageColor, this.price});
+  CardData({this.imagePath, this.title, this.pageColor, this.price, this.discountText});
 
 }

@@ -3,7 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_challenge_ecommerce/data/card_data.dart';
 import 'package:flutter_challenge_ecommerce/data/data.dart';
-import 'package:flutter_challenge_ecommerce/preview_popup_route.dart';
+import 'package:flutter_challenge_ecommerce/routes/preview_popup_route.dart';
 import 'package:flutter_challenge_ecommerce/utils/utility_classes.dart';
 
 import '../utils/utils.dart';
@@ -62,41 +62,95 @@ class _CardViewState extends State<CardView> {
     super.didUpdateWidget(oldWidget);
   }
 
+  Widget _getDescriptionShuttle({
+    String priceText, String title,
+    FontWeight descriptionFontWeight,
+    Color priceColor, double priceTextSize, Animation animation}) {
+      return AnimatedBuilder(
+        animation: animation,
+        builder: (BuildContext context, Widget widget) {
+          return _getDescriptionWidget(
+            priceText: priceText,
+            priceColor: Color.lerp(priceColor, Data().pink, animation.value),
+            title: title,
+            priceTextSize: priceTextSize + (3 * animation.value),
+            descriptionFontWeight: FontWeight.lerp(descriptionFontWeight, FontWeight.w900, animation.value)
+          );
+        },
+      );
+  }
+
+  Widget _getDescriptionWidget({
+    String priceText, String title,
+    FontWeight descriptionFontWeight,
+    Color priceColor, double priceTextSize}) {
+    return Material(
+      color: Colors.transparent,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          Container(
+            height: 25,
+            child: Text(
+              priceText,
+              textAlign: TextAlign.left,
+              style: TextStyle(
+                  fontSize: priceTextSize,
+                  fontWeight: FontWeight.w900,
+                  color: priceColor
+              ),
+            ),
+          ),
+          SizedBox(
+            height: 7,
+          ),
+          Container(
+            height: 20,
+            child: Text(
+              title,
+              textAlign: TextAlign.left,
+              style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: descriptionFontWeight,
+                  color: Colors.black
+              ),
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
 
   Widget _getDescription() {
+
+    var priceText = '¥ ${widget.cardData.price.toStringAsFixed(2)}';
+    var title = widget.cardData.title;
+    var priceColor = Colors.black;
+    var priceTextSize = 20.0;
+    var descFontWeight = FontWeight.w500;
+
     return Expanded(
       child: Hero(
-
+        flightShuttleBuilder: (BuildContext context, Animation animation,
+            HeroFlightDirection direction, BuildContext context1, BuildContext context2) {
+          return _getDescriptionShuttle(
+            title: title,
+            priceText: priceText,
+            animation: animation,
+            priceTextSize: priceTextSize,
+            priceColor: priceColor,
+            descriptionFontWeight: descFontWeight
+          );
+        },
         tag: 'description${widget.cardData.title}',
-        child: Material(
-          color: Colors.transparent,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              Text(
-                '¥ ${widget.cardData.price.toStringAsFixed(2)}',
-                textAlign: TextAlign.left,
-                style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w900,
-                    color: Colors.black
-                ),
-              ),
-              SizedBox(
-                height: 7,
-              ),
-              Text(
-                widget.cardData.title,
-                textAlign: TextAlign.left,
-                style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.black
-                ),
-              )
-            ],
-          ),
+        child: _getDescriptionWidget(
+          title: title,
+          priceColor: priceColor,
+          priceTextSize: priceTextSize,
+          priceText: priceText,
+          descriptionFontWeight: descFontWeight
         ),
       ),
     );
@@ -118,7 +172,7 @@ class _CardViewState extends State<CardView> {
                   ..setEntry(3, 2, 0.001))
                     * Matrix4.rotationX(_tiltValueX * .5)
                     * Matrix4.rotationY(_tiltValueY * .5),
-                child: Container(
+                child: Container( //
                   width: size.width,
                   height: size.height + 50,
                   child: CustomPaint(
@@ -135,7 +189,7 @@ class _CardViewState extends State<CardView> {
                     * Matrix4.rotationY(_tiltValueY),
 
                 child: Container(
-                  height: size.height - 20, //-20 чтобы оставить пространство для тени
+                  height: size.height - 20, // простраство для тени
                   child: Padding(
                     padding: EdgeInsets.all(5.0),
                     child: GestureDetector(

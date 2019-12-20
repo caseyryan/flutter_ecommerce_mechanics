@@ -40,5 +40,30 @@ class ShadowPainter extends CustomPainter {
   bool shouldRepaint(CustomPainter oldDelegate) {
     return false;
   }
+}
 
+
+class HeroRectTween extends RectTween {
+  HeroRectTween({this.begin, this.end}) : super(begin: begin, end: end);
+  final Rect begin;
+  final Rect end;
+
+  @override
+  Rect lerp(double t) {
+    t = Curves.easeInQuart.transform(t);
+
+    return Rect.fromLTRB(
+      lerpDouble(begin.left, end.left, t),
+      lerpDouble(begin.top, end.top, t),
+      lerpDouble(begin.right, end.right, t),
+      lerpDouble(begin.bottom, end.bottom, t),
+    );
+  }
+
+  double lerpDouble(num a, num b, double t) {
+    if (a == null && b == null) return null;
+    a ??= 0.0;
+    b ??= 0.0;
+    return a + (b - a) * t;
+  }
 }

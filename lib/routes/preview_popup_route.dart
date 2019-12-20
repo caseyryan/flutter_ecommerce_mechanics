@@ -3,7 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_challenge_ecommerce/pages/card_preview_page.dart';
 
-import 'data/card_data.dart';
+import '../data/card_data.dart';
 
 class PreviewPopupRoute extends PageRoute<void> {
 

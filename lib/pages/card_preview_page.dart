@@ -4,9 +4,10 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_challenge_ecommerce/data/card_data.dart';
 import 'package:flutter_challenge_ecommerce/data/data.dart';
-import 'package:flutter_challenge_ecommerce/pages/page.dart';
+import 'package:flutter_challenge_ecommerce/pages/gallery_page.dart';
 import 'package:flutter_challenge_ecommerce/ui/card_view.dart';
 import 'package:flutter_challenge_ecommerce/ui/custom_app_bar.dart';
+import 'package:flutter_challenge_ecommerce/utils/utility_classes.dart';
 
 
 class CardPreviewPage extends StatefulWidget {
@@ -42,6 +43,7 @@ class _CardPreviewPageState extends State<CardPreviewPage> with SingleTickerProv
   Animation<double> _imageSizeAnimation;
   Animation<double> _padPosAnimation;
   Animation<double> _padSizeAnimation;
+  Animation<double> _disountAnimation;
 
 
   @override
@@ -77,18 +79,22 @@ class _CardPreviewPageState extends State<CardPreviewPage> with SingleTickerProv
       curve: Interval(0.2, 0.7, curve: curve),
       parent: widget.animation,
     ));
-
+    // анимация для текста со скидкой. Должна быть с небольщой задержкой
+    _disountAnimation = Tween<double>(begin: 0.0, end: 1.0
+    ).animate(CurvedAnimation(
+      curve: Interval(0.3, 0.9, curve: curve),
+      parent: widget.animation,
+    ));
 
 
     super.initState();
   }
   Widget _createCartIcon() {
     return Hero(
-      flightShuttleBuilder: (BuildContext context, Animation animation,
-          HeroFlightDirection direction, BuildContext context1, BuildContext context2) {
-        return Container();
-      },
       tag: widget.cardData.title,
+      createRectTween: (Rect begin, Rect end) {
+        return HeroRectTween(begin: begin, end: end);
+      },
       child: Container(
         width: 45,
         height: 45,
@@ -106,6 +112,9 @@ class _CardPreviewPageState extends State<CardPreviewPage> with SingleTickerProv
   Widget _getDescription() {
     return Expanded(
       child: Hero(
+        createRectTween: (Rect begin, Rect end) {
+          return HeroRectTween(begin: begin, end: end);
+        },
         tag: 'description${widget.cardData.title}',
         child: Material(
           color: Colors.transparent,
@@ -113,25 +122,31 @@ class _CardPreviewPageState extends State<CardPreviewPage> with SingleTickerProv
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
-              Text(
-                '¥ ${widget.cardData.price.toStringAsFixed(2)}',
-                textAlign: TextAlign.left,
-                style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w900,
-                    color: Data().pink
+              Container(
+                height: 25,
+                child: Text(
+                  '¥ ${widget.cardData.price.toStringAsFixed(2)}',
+                  textAlign: TextAlign.left,
+                  style: TextStyle(
+                      fontSize: 23,
+                      fontWeight: FontWeight.w900,
+                      color: Data().pink
+                  ),
                 ),
               ),
               SizedBox(
                 height: 7,
               ),
-              Text(
-                widget.cardData.title,
-                textAlign: TextAlign.left,
-                style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.black
+              Container(
+                height: 20,
+                child: Text(
+                  widget.cardData.title,
+                  textAlign: TextAlign.left,
+                  style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w900,
+                      color: Colors.black
+                  ),
                 ),
               )
             ],
@@ -164,7 +179,7 @@ class _CardPreviewPageState extends State<CardPreviewPage> with SingleTickerProv
                   var imageAnimWidth = widget.imageSize.width + (pageSize.width - widget.imageSize.width) * _imageSizeAnimation.value;
                   var imageAnimHeight = widget.imageSize.height + (maxImageHeight - widget.imageSize.height) * _imageSizeAnimation.value;
 
-                  var sizeRatio = _imagePosAnimation.value.clamp(0, 1);
+                  var completeRatio = _imagePosAnimation.value.clamp(0, 1);
 
                   var imageTop = (widget.position.dy * _imagePosAnimation.value) + _imageLiftAnimation.value;
                   var imageLeft = widget.position.dx * _imagePosAnimation.value;
@@ -184,6 +199,7 @@ class _CardPreviewPageState extends State<CardPreviewPage> with SingleTickerProv
                           color: Colors.white,
                         ),
                       ),
+
                       Stack(
                         children: <Widget>[
                           Positioned(
@@ -191,18 +207,33 @@ class _CardPreviewPageState extends State<CardPreviewPage> with SingleTickerProv
                             left: imageLeft,
                             child: Padding(
                               padding: EdgeInsets.only(
-                                top: widget.cardData.topPadding * sizeRatio,
-                                left: widget.cardData.sidePadding * sizeRatio,
-                                right: widget.cardData.sidePadding * sizeRatio,
+                                top: widget.cardData.topPadding * completeRatio,
+                                left: widget.cardData.sidePadding * completeRatio,
+                                right: widget.cardData.sidePadding * completeRatio,
                               ),
                               child: Stack(
                                 children: <Widget>[
-                                  Container(
+                                  Transform( // тень под картинкой
+                                    transform: Matrix4.translationValues(0, 18, 0),
+                                    child: Opacity(
+                                      opacity: completeRatio,
+                                      child: Container(
+                                        width: imageAnimWidth,
+                                        height: imageAnimHeight,
+//                                    color: Colors.orange.withOpacity(.7),
+                                        child: CustomPaint(
+                                          size: Size(widget.imageSize.width, widget.imageSize.height - 50),
+                                          painter: ShadowPainter(.3),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  Container( // картинка
                                     width: imageAnimWidth,
                                     height: imageAnimHeight,
 //                                    color: Colors.orange.withOpacity(.7),
                                     decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(7 * sizeRatio),
+                                        borderRadius: BorderRadius.circular(7 * completeRatio),
                                         image: DecorationImage(
                                             fit: BoxFit.cover,
                                             image: AssetImage(widget.cardData.imagePath)
@@ -236,10 +267,10 @@ class _CardPreviewPageState extends State<CardPreviewPage> with SingleTickerProv
                           Stack(
                             children: <Widget>[
                               Positioned(
-                                bottom: -80 *  sizeRatio,
+                                bottom: -80 *  completeRatio,
                                 left: (pageSize.width - 90) / 2,
                                 child: Opacity(
-                                  opacity: 1 - sizeRatio,
+                                  opacity: 1 - completeRatio,
                                   child: Container(
                                     width: 90,
                                     height: 120,
@@ -251,6 +282,24 @@ class _CardPreviewPageState extends State<CardPreviewPage> with SingleTickerProv
                                 ),
                               ),
                             ],
+                          ),
+                          Positioned( // текст скидки
+                          bottom: 95 + 20 * _disountAnimation.value,
+                            child: Opacity(
+                              opacity: _disountAnimation.value,
+                              child: Padding(
+                                padding: EdgeInsets.only(left: 15),
+                                child: Text(
+                                  widget.cardData.discountText,
+                                  textAlign: TextAlign.left,
+                                  style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w500,
+                                      color: Colors.black54
+                                  ),
+                                ),
+                              ),
+                            ),
                           ),
                           Positioned(
                             child: Material(
@@ -313,7 +362,7 @@ class _CardPreviewPageState extends State<CardPreviewPage> with SingleTickerProv
                                 ),
                               ),
                             ),
-                            bottom: -52 *  sizeRatio,
+                            bottom: -52 *  completeRatio,
                           ),
 
 

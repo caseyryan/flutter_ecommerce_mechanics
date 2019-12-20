@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_challenge_ecommerce/pages/page.dart';
+import 'package:flutter_challenge_ecommerce/pages/gallery_page.dart';
 import 'package:screen/screen.dart';
 
 void main() => runApp(MyApp());
@@ -46,7 +46,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Page(),
+      body: GalleryPage(),
     );
   }
 }
