@@ -96,13 +96,13 @@ class _GalleryPageState extends State<GalleryPage> {
     var thumbs = <Widget>[];
     for (var i = 0; i < numThumbs; i++) {
 
-//      var spring = sin(deg2rad((_curPageValue % 1.0) * 180));
+      // elastic movement
       var step = 1.0 / numThumbs;
       Interval interval;
       if (_getDirection() < 0) {
         interval = Interval(step * i, 1.0, curve: Curves.easeInQuart);
       } else {
-        interval = Interval(0.0, (step * i).clamp(step, 1.0), curve: Curves.easeOutQuart);
+        interval = Interval(0.0, step * (i + 1), curve: Curves.easeOutQuart);
       }
       var spring = interval.transform((_curPageValue % 1.0));
 //      var spring = (_curPageValue % 1.0);
