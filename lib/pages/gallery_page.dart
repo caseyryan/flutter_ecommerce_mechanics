@@ -104,8 +104,7 @@ class _GalleryPageState extends State<GalleryPage> {
       } else {
         interval = Interval(0.0, step * (i + 1), curve: Curves.easeOutQuart);
       }
-      var spring = interval.transform((_curPageValue % 1.0));
-//      var spring = (_curPageValue % 1.0);
+      var spring = interval.transform(_curPageValue % 1.0);
       var curLeft = (i * paddedWidth + halfParent - paddedWidth / 2);
       var newLeft = curLeft - (paddedWidth * (_curPageValue.floorToDouble() + spring));
 

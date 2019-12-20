@@ -31,25 +31,6 @@ class CustomAppBar extends StatelessWidget {
         ),
       ),
     );
-
-//    return Container(
-//      leading: Padding(
-//        padding: const EdgeInsets.only(top: 10.0),
-//        child: Icon(Icons.arrow_back, color: Colors.white, size: 30,),
-//      ),
-//      elevation: 0,
-//      actions: <Widget>[
-//        Padding(
-//          padding: const EdgeInsets.only(top: 20.0, bottom: 10.0, left: 10.0, right: 10.0),
-//          child: Icon(Icons.add_shopping_cart, size: 25,),
-//        ),
-//        Padding(
-//          padding: const EdgeInsets.only(top: 20.0, bottom: 10.0, left: 10.0, right: 20.0),
-//          child: Icon(Icons.filter_none, size: 25,),
-//        ),
-//      ],
-//
-//    );
   }
 
   @override
