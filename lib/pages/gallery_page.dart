@@ -53,8 +53,8 @@ class _GalleryPageState extends State<GalleryPage> {
     super.initState();
   }
 
-  bool _isMovingLeft() {
-    return _nextPage < _prevPage;
+  double _getDirection() {
+    return (_prevPage - _nextPage).sign;
   }
 
   List<Widget> _getCards() {
@@ -89,14 +89,25 @@ class _GalleryPageState extends State<GalleryPage> {
 
     var thumbWidth = 50.0;
     const thumbPadding = 10.0;
-    var goDistance = (thumbWidth + (thumbPadding * 2));
+    var paddedWidth = (thumbWidth + (thumbPadding * 2));
     var halfParent = parentWidth / 2;
     var maxDistBetween = (thumbWidth / (numThumbs - 1)).clamp(0.0, thumbPadding);
 
     var thumbs = <Widget>[];
     for (var i = 0; i < numThumbs; i++) {
-      var spring = sin(deg2rad((_curPageValue % 1.0) * 180));
-      var left = (i * goDistance + halfParent - goDistance / 2) - (goDistance * _curPageValue);
+
+//      var spring = sin(deg2rad((_curPageValue % 1.0) * 180));
+      var step = 1.0 / numThumbs;
+      Interval interval;
+      if (_getDirection() < 0) {
+        interval = Interval(step * i, 1.0, curve: Curves.easeInQuart);
+      } else {
+        interval = Interval(0.0, (step * i).clamp(step, 1.0), curve: Curves.easeOutQuart);
+      }
+      var spring = interval.transform((_curPageValue % 1.0));
+//      var spring = (_curPageValue % 1.0);
+      var curLeft = (i * paddedWidth + halfParent - paddedWidth / 2);
+      var newLeft = curLeft - (paddedWidth * (_curPageValue.floorToDouble() + spring));
 
       var imageOpacity = .5;
       var shadowOpacity = .0;
@@ -106,7 +117,7 @@ class _GalleryPageState extends State<GalleryPage> {
       }
 
       thumbs.add(Positioned(
-        left: left + (i * maxDistBetween * spring),
+        left: newLeft,
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: thumbPadding),
           child: Stack(
